@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="description" content="A word reader that takes the idea of rsvp(rapid serial visual presentation).
+    This is done by storing all words and displaying it back at words per minute, with the hope of increasing reading speed,
+    on the application and offline.">
+    <meta name="author" content="Neo Sahadeo">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <title>Speed Reader</title>
+    <style>
+      *{
+        margin:0px;
+        pointer-events:auto;
+      }
+      @media only screen and (max-width:960px){
+        #desktopView{
+          display:none;
+        }
+        #mobileView{
+          display:block;
+          position:fixed;
+        }
+      }
+      @media only screen and (min-width: 961px) {
+        /* scrollbar */
+        ::-webkit-scrollbar {
+          width:27px;
+          cursor:pointer;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background:#202020;
+          border-radius: 39px;
+          z-index:2;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #496480;
+        }
+
+        ::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
+        .wordIndexed{
+          -webkit-appearance:none;
+          width:724px;
+          height:47px;
+          position:relative;
+          left:50%;
+          transform:translate(-50%);
+          background:transparent;
+        }
+        .wordIndexed::-webkit-slider-thumb{
+          -webkit-appearance: none;
+          appearance: none;
+          height:13px;
+          width:47px;
+          transform:rotate(90deg);
+          background: #D77A7A;
+          border: 2px solid #D86F6F;
+          box-sizing: border-box;
+          box-shadow: inset 3px 4px 10px -2px #000000;
+          border-radius: 24px;
+          cursor:pointer;
+        }
+        .wordIndexed:focus{
+          outline:none;
+        }
+
+        /* -------------------------------------- */
+          body{
+            position:fixed;
+            background-color:#181818;
+            /* background-color:blue; */
+          }
+          #desktopView{display:block;}
+          #mobileView{display:none;}
+          #menuButton{
+            position: absolute;
+            margin:32px;
+            width:60px;
+            height:48px;
+            /* width:325px;
+            height:393px;
+            */
+            background-color:#181818;
+            border: 2px solid #D86F6F;
+            box-sizing: border-box;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 52px;
+            cursor:pointer;
+            flex-direction:column;
+            transition:width 0.3s, height 0.3s;
+          }
+          #menuButton:hover{
+            width:325px;
+            /* height:393px;
+            */
+            height:250px;
+            filter:unset;
+            cursor:default;
+            /* background-color:#bf4e4e;
+            */
+          }
+          #bookIcon{
+            width: 59.14px;
+            height: 52.93px;
+            left: 1354px;
+            top: 32px;
+            margin:32px;
+            transition:transform 0.2s;
+            background:url(BookIcon.svg);
+            background-size:59.14px 52.93px;
+            background-repeat:no-repeat;
+            border:none;
+          }
+          #bookIcon:hover{
+            transform:scale(1.2);
+          }
+          #text {
+            font-size:5em;
+            font-family:Arial;
+            color: white;
+            text-align:center;
+          }
+          #MediaControlPanel{
+            flex-direction:column;
+          }
+          #textFieldborder{
+            background:#505050;
+            box-shadow:inset 0px 4px 4px -1px #000000;
+            border-radius:28px;
+            width:90%;
+            height:92vh;
+            position:relative;
+            margin:40px;
+            margin-top:4vh;
+            margin-left:2%;
+            display:flex;
+            justify-content:flex-start;
+            align-items:flex-start;
+            animation:textAreaFrames 0.2s;
+          }
+          #textField{
+            margin:20px;
+            width:100vw;
+            height:95%;
+            resize:none;
+            background-color:transparent;
+            border:0px;
+            color:white;
+            font-family:Arial;
+            font-size:2em;
+            word-wrap:break-word;
+            overflow-y:auto;
+            cursor:default;
+            opacity:1;
+            animation:textFieldFrames 0.3s;
+          }
+          #textField:focus{
+            outline:none;
+          }
+          #speedInfo{
+            visibility:hidden;
+          }
+          #ColorInfo{
+            visibility:hidden;
+          }
+          #backButton{
+            transform:scale(1);
+            position:absolute;
+            height:48px;
+            width:65px;
+            background-position:center;
+            background-size:auto auto;
+            background:url(BackArrow.svg);
+            background-repeat:no-repeat;
+            border:none;
+          }
+          #backSplash{
+            height:70vh;
+            width:70vw;
+            top:45%;
+            border-radius:50px;
+          }
+          @keyframes backsplashAnim {
+            from{
+              width:70vw;
+              height:70vh;
+            }
+            to{
+              width:100vw;
+              height:100vh;
+            }
+          }
+          @keyframes backsplashAnimClose {
+            from{
+              width:100vw;
+              height:100vh;
+            }
+            to{
+              width:70vw;
+              height:70vh;
+            }
+          }
+          .icon:hover {
+            filter: invert(36%) sepia(87%) saturate(1361%) hue-rotate(335deg) brightness(86%) contrast(96%);
+          }
+          .icon{
+            margin:36px;
+            margin-bottom:-40px;
+            cursor:pointer;
+          }
+          .mediaPlayer{
+            height:32px;
+            transition:transform 0.2s;
+          }
+          .mediaPlayer:hover{
+            transform:scale(1.2);
+          }
+          .buttonBox{
+            height:77.5px;
+            width:275px;
+            border-radius:23px;
+            background-color:#D86F6F;
+            margin:16.1px;
+            animation:menuOpen 0.3s;
+            cursor:default;
+          }
+          .menuIcons{
+            display:inherit;
+            width:60px;
+            margin:10px;
+            top:-4px;
+            animation:menuIcon 0.7s;
+            opacity:1;
+            position:relative;
+            filter: invert(100%) sepia(0%) saturate(1361%) hue-rotate(222deg) brightness(85%) contrast(84%);
+          }
+          .Info:hover>#speedInfo{
+            animation:tooltip 1s infinite 1.25s;
+          }
+          .Info:hover>#ColorInfo{
+            animation:tooltip 1s infinite 1.25s;
+          }
+          .infoBox{
+            width:auto;
+            height:auto;
+            border-radius:36px;
+            background-color:white;
+            position:absolute;
+            z-index:10;
+            text-align:center;
+            margin-bottom:110px;
+            box-shadow: 4px 8px 45px -12px rgba(0,0,0,0.61);
+          }
+          .menuText{
+            font-family:Arial;
+            font-weight:bold;
+            margin:10px;
+          }
+          .buttonInputs:focus{
+            border:0px;
+            outline:none;
+          }
+          .colorPicker{
+            border:none;
+            background-color:transparent;
+            padding:0px;
+            width:50px;
+            margin-left:23px;
+            height:50px;
+            cursor:pointer;
+          }
+          .colorPicker::-webkit-color-swatch{
+            border-radius:100px;
+            border:2px;
+            border-style:dotted;
+            border-color:#bf4e4e;
+          }
+          @keyframes textAreaFrames{
+            from{
+              margin-left:100%;
+              width:0%;
+              height:0vh;
+            }
+            to{
+              height:92vh;
+              width:90%;
+              margin-left:2%;
+            }
+          }
+          @keyframes overlayClose{
+            from{
+              height:92vh;
+              width:90%;
+              margin-left:2%;
+            }
+            to{
+              margin-left:97%;
+              width:0%;
+              height:0vh;
+            }
+          }
+          @keyframes textFieldFrames{
+            0%{
+              opacity:0;
+            }
+            69%{
+              opacity:0;
+            }
+            70%{
+              opacity:1;
+            }
+          }
+          @keyframes menuOpen {
+            from{
+              width:0px;
+              height:0px;
+            }
+            to{
+              width:275px;
+              height:77.5px
+          }
+          }
+          @keyframes tooltip{
+            0%{
+              visibility:visible;
+            }
+          }
+          @keyframes menuIcon{
+            from{
+              opacity:0;
+            }
+            to{
+              opacity:1;
+            }
+          }
+      }
+
+      /* <!-- css to export! --> */
+      .Hemisphere{display:flex;width:100%;height:100%;pointer-events:none;}
+      .AntiScaler{flex-basis:0;flex-shrink:0;flex-grow:0;}
+      .basicContainer{display:flex;width:100vw;height:100vh;justify-content:space-evenly;z-index:-1;position:fixed;pointer-events:none;}
+      .autoMeasure{width:auto;height:auto;}
+      .fullMeasure{width:100%;height:100%;}
+      .center{display:flex;justify-content:center;align-items:center;}
+      .centerNF{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+    </style>
+    </head>
+  <body onload="load()">
+    <div id="desktopView">
+      <!-- Foundation Layer/ This is the layer for menus and contacts -->
+      <div id="foundationLayer" class="basicContainer">
+        <!-- Hemisphere 1  -->
+        <div class="Hemisphere">
+          <!-- onfocus="menuDisplay()" onblur="menuClose()" -->
+          <button class="icon center" id="menuButton" onmouseout="menuClose()" onmouseover="menuDisplay()">
+            <!-- position:fixed;top:0px;left:100px; -->
+            <div id="menuContainer" style="display:none;">
+              <div class="Hemisphere autoMeasure">
+                <div class="buttonBox center Info" style="display:flex;flex-direction:row;">
+                  <div class="center infoBox" id="speedInfo">
+                    <p class="menuText">
+                      Words per minute
+                    </p>
+                  </div>
+                  <img alt="Speed-Icon that indicates this section if for the words per minute" src="speedIcon.svg" class="menuIcons"/>
+                  <div class="autoMeasure center">
+                    <div class="autoMeasure center" style="background-color:#c24646;border-radius:36px;width:120px;height:40px;margin-left:20px;">
+                      <textarea oninput="speedCalc()" class="buttonInputs"id="speedInput" style="overflow-y:hidden;font-family:Arial;color:white;font-size:20px;resize:none;background-color:transparent;border:0px;width:80%;height:20px;">60</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="Hemisphere autoMeasure">
+                <div class="buttonBox center Info" style="display:flex;flex-direction:row;">
+                  <div class="center infoBox" id="ColorInfo">
+                    <p class="menuText">
+                      Color-Picker.
+                      Left is word color.
+                      Right is background color.
+                    </p>
+                  </div>
+                  <img alt="Color-Icon indicates that the color of text and background can be changed here" src="Color.svg" style="margin-top:20px;" class="menuIcons"/>
+                  <input type="color" oninput="ColorChanger()" class="colorPicker" value="#000000"  id="textColor"/>
+                  <input type="color" oninput="ColorChanger()" class="colorPicker" value="#EDD1B0"  id="backgroundColorPicker"/>
+                </div>
+              </div>
+              <!-- <div class="Hemisphere autoMeasure">
+                <div class="buttonBox" id="specialCharacters">
+
+                </div>
+              </div> -->
+            </div>
+          </button>
+        </div>
+        <!-- Hemisphere 2 -->
+        <div class="Hemisphere" style="justify-content:space-evenly;flex-direction:column;">
+          <div class="Hemisphere" style="justify-content:flex-end;">
+            <button onfocus="textLoader()" onmouseover="textLoader()" class="icon" id="bookIcon" style=""></button>
+          </div>
+          <div class="Hemisphere" style="justify-content:flex-end;align-items:flex-end;">
+            <div class="center"style="height:auto;position:relative;bottom:50px;">
+              <a href="https://www.instagram.com/neosahadeo/">
+                <img alt="Instagram link" class="icon" src="Instagram.svg" style="height:30px;position:relative;bottom:6px;margin-right:20px;">
+              </a>
+              <a href="mailto:neosahadeo@outlook.com">
+                <img alt="Email link to neosahadeo@outlook.com" class="icon" src="Google.svg" style="height:43px;position:relative;bottom:6px;margin-left:0px;"/>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END OF FOUNDATION LAYER -->
+      <!-- Framing Layer/ This is the layer for the text and the media controls -->
+      <div id="framingLayer" class="basicContainer">
+        <div class="Hemisphere" style="flex-direction:column;">
+          <!-- Hemisphere 1 -->
+          <div class="basicContainer center">
+            <!-- <div class="centerNF" id="dot" style="background-color:red;width:10px;height:10px;border-radius:36px;top:44%;z-index:12;"></div> -->
+            <div id="text" style="z-index:11;position:relative;top:-7%;"></div>
+          </div>
+          <div class="Hemisphere"></div>
+          <!-- Hemisphere 2 bottom:-18% -->
+          <div id="MediaControlPanel" class="Hemisphere center" style="margin-bottom:-20vh;">
+            <div id="MediaControls" class="center" style="position:relative;bottom:61px;">
+              <img alt="Play button" class="mediaPlayer icon" src="Subtract.svg" onclick="play()"  id="play" />
+              <img alt="Pause button" class="mediaPlayer icon" src="Pause.svg"    onclick="pause()" id="pause"/>
+              <img alt="Stop / Restart button" class="mediaPlayer icon" src="Stop.svg"     onclick="stop()"  id="stop" />
+            </div>
+            <div>
+              <input class="wordIndexed" oninput="sliderUpdate(this.value)" id="indexSlider" type="range" min="0" max="0" value="0"/>
+                <div class="wordIndexed" style="background-color:#C7C7C7;height:0px;border:3px solid #C7C7C7;border-radius:36px;top:-30px;z-index:-1;width:680px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END OF FRAMING LAYER -->
+      <!-- Text input layer -->
+      <div class="basicContainer" id="textOverlay" style="display:none;background-color:transparent;">
+        <div class="Hemisphere">
+          <div style="width:0.1%;"></div>
+          <div id="textFieldborder">
+            <textarea id="textField" contenteditable="false" placeholder="Enter text here."></textarea>
+          </div>
+          <!-- <div style="z-index:0;position:relative;top:74px;right:82px;width:17px;height:756px;border:4px solid #C4C4C4;box-sizing:border-box;box-shadow:inset 1px 0px 2px rgba(0, 0, 0, 0.55);border-radius:32px;"></div> -->
+          <div class="center" style="">
+            <button id="backButton" onfocus="back()" onmouseover="back()" class="icon" style="top:45%;"/>
+          </div>
+        </div>
+      </div>
+      <div class="basicContainer" style="z-index:-10;">
+        <div class="centerNF center" id="backSplash" style="align-items:flex-end;justify-content:flex-end;">
+          <img alt="background maximise button" onclick="maximise()" id="Maximise" style="display:block;margin:30px;cursor:pointer;filter:brightness(100%);" class="icon" src="Maximise.svg" />
+          <img alt="background minimise butotn" onclick="minimise()" id="Minimize" style="display:none ;margin:30px;cursor:pointer;filter:brightness(100%);" class="icon" src="Minimize.svg" />
+        </div>
+      </div>
+      <!-- END OF TEXT INPUT LAYER -->
+    </div>
+    <!-- End of Desktop site -->
+    <div id="mobileView">
+      <div class="basicContainer center">
+        <p style="font-family:Arial;font-size:5em;color:black;">Site Not Operation For Mobile Yet, check back soon...</p>
+      </div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    let TextStorage = [];
+    let textfile = "";
+    let numOfWords = 0;
+    let paused = true;
+    let wpm;
+    let speed = 1000;
+    let menuButton = document.getElementById("menuButton");
+    let BackSplash = document.getElementById("backSplash");
+
+    let red;
+    let green;
+    let blue;
+    let brightness=100;
+
+    function load(){
+      ColorChanger();
+    };
+    function maximise(){
+      BackSplash.style.width="100vw";
+      BackSplash.style.height="100vh";
+      BackSplash.style.top="50%";
+      BackSplash.style.borderRadius="0px";
+      BackSplash.style.animation="backsplashAnim 0.2s";
+      document.getElementById("MediaControlPanel").style.display="none";
+      document.getElementById("foundationLayer").style.display="none";
+      document.getElementById("Minimize").style.display="block";
+      document.getElementById("Maximise").style.display="none";
+      document.getElementById("text").style.top="0%";
+    }
+    // height:70vh;
+    // width:70vw;
+    // top:45%;
+    // border-radius:50px;
+    function minimise(){
+      BackSplash.style.width="70vw";
+      BackSplash.style.height="70vh";
+      BackSplash.style.top="45%";
+      BackSplash.style.borderRadius="50px";
+      BackSplash.style.animation="backsplashAnimClose 0.2s";
+      document.getElementById("MediaControlPanel").style.display="flex";
+      document.getElementById("foundationLayer").style.display="flex";
+      document.getElementById("Minimize").style.display="none";
+      document.getElementById("Maximise").style.display="block";
+      document.getElementById("text").style.top="-7%";
+    }
+    ///Maybe export? --------------------------------------------------------------------------------
+    function ColorChanger(){
+      let colorvalBackground=document.getElementById("backgroundColorPicker").value;
+      BackSplash.style.backgroundColor=colorvalBackground;
+
+      colorvalBackground=colorvalBackground.replace(/[^a-zA-Z0-9]/g, "");
+      let ram=0;
+
+      function colorFunction(){
+        brightness=String(brightness);
+        if(brightness>=50){
+          document.getElementById("Maximise").style.filter=`brightness(100%)`;
+          document.getElementById("Minimize").style.filter=`brightness(100%)`;
+        }
+        if(brightness<50){
+          document.getElementById("Maximise").style.filter=`brightness(0%)`;
+          document.getElementById("Minimize").style.filter=`brightness(0%)`;
+        }
+      }
+
+      document.getElementById("text").style.color=document.getElementById("textColor").value;
+      // console.log(colorvalBackground.charAt(1),colorvalBackground)
+
+      // colorval=parseInt(colorval,16);
+      // console.log(colorval);
+      let colorFormat = new Promise((resolve,reject)=>{
+        function colorCalc(){
+          brightness=100-(((red+green+blue)/765)*100);
+          brightness=parseInt(brightness);
+          //colorInvert();
+        }
+        function colorInvert(){
+          red  =(255-red  );
+          green=(255-green);
+          blue =(255-blue );
+        }
+        for(i=0;i<6;i++){
+          ram=ram+colorvalBackground.charAt(i);
+          if(i%2>0){
+            if(i==1){red  =ram;red  =parseInt(red  ,16);ram=""};
+            if(i==3){green=ram;green=parseInt(green,16);ram=""};
+            if(i==5){blue =ram;blue =parseInt(blue ,16);ram=""};
+          }
+          if(i==5){
+            colorCalc();
+          }
+        }
+      });
+      colorFormat.then(
+        colorFunction()
+      );
+    }
+    //----------------------------------------------------------------------------------
+    function sliderUpdate(val){
+      document.getElementById("text").innerHTML = TextStorage[val];
+      numOfWords=val;
+      paused=true;
+    }
+    function textLoader() {
+      clearInterval(wpm);
+      document.getElementById("textOverlay").style.display="block";
+      document.getElementById("foundationLayer").style.display="none";
+      document.getElementById("framingLayer").style.display   ="none";
+    }
+
+    function menuDisplay() {
+      // menuButton.style.height="393px";
+      // menuButton.style.width="325px";
+      // menuButton.style.filter="unset";
+      // menuButton.style.cursor="default";
+      document.getElementById("menuContainer");
+      menuContainer.style.display="block";
+/////////////////////////////////////////////////////////////////////////Fix the menu---tab to be specific
+    };
+
+    function menuClose() {
+      document.getElementById("menuContainer").style.display="none";
+    }
+    speedCalc=()=>{
+      speed = String(document.getElementById("speedInput").value);
+      speed = parseInt(speed.replace(/\s+/g, ''));
+      // console.log(speed);
+      if(speed > 0){
+        speed = (1000 / (speed / 60));
+        if(wpm!=null){
+          paused=true;
+          play();
+        }
+      }
+    }
+    //play button function
+    function play() {
+      clearInterval(wpm);
+      if (paused == false) {
+        numOfWords = 0;
+      }
+      if(TextStorage.length!=0){
+        wpm = setInterval(wordChanger, speed); //wpm
+      }
+      function wordChanger() {
+        paused = false;
+        if (numOfWords < TextStorage.length) {
+          document.getElementById("text").innerHTML = TextStorage[numOfWords];
+        } else {
+          clearInterval(wpm);
+        };
+        if (numOfWords == TextStorage.length){
+          let jarReaction = new Promise((resolve,reject)=>{
+              setTimeout(function(){
+                paused=true;
+                numOfWords=0;
+                document.getElementById("text").innerHTML=TextStorage[numOfWords];
+                document.getElementById("indexSlider").value=numOfWords;
+              },500);
+            }
+          );
+        }else{
+          document.getElementById("indexSlider").value=numOfWords;
+        }
+        numOfWords++;
+      }
+    }
+    //stop button
+    function stop() {
+      clearInterval(wpm);
+      if(TextStorage[0]!=undefined){
+        document.getElementById("text").innerHTML = TextStorage[0];
+      };
+      document.getElementById("indexSlider").value=0;
+      numOfWords=0;
+      paused=true;
+    }
+    //pause button
+    function pause() {
+      let pausePromise = new Promise((resolve,reject)=>{
+        clearInterval(wpm);
+        paused = true;
+      });
+      // pausePromise.then(
+      //   err=(val)=>{console.log("paused failed");}
+      // );
+    }
+    // back button function / hides text Overlay / loads all words into an array.
+    function back() {
+      let textFieldborder = document.getElementById("textFieldborder");
+      let textOverlay     = document.getElementById("textOverlay");
+      let textField       = document.getElementById("textField");
+      document.getElementById("foundationLayer").style.display="flex";
+      document.getElementById("framingLayer").style.display   ="flex";
+      textFieldborder.style.animation="overlayClose 0.2s";
+      textOverlay.style.backgroundColor="transparent";
+      let textAreasPromise = new Promise((resolve,reject)=>{
+          setTimeout(function(){textField.style.opacity="1";textOverlay.style.display="none";textFieldborder.style.animation="textAreaFrames 0.2s";textOverlay.style.backgroundColor="transparent";},170);
+      });
+      let textFieldPromise = new Promise((resolve,reject)=>{
+          setTimeout(function(){textField.style.opacity="0"},100);
+      });
+      let textCompositer = new Promise((resolve,rejecct)=>{
+        // document.getElementById("text").style.zIndex = "0"; //Sets text display to index 0 because of unintened apperances over text input area
+        TextStorage = []; // reset array due to concatination issue
+        textfile = document.getElementById("textField").value;
+
+        //removes excesss white spaces and then adds each word as a unique element in an array.
+        textfile = textfile.replace(/\s+/g, ' ').trim();
+        textfile = textfile.replace(/[^a-zA-Z0-9,. ]/g, "") //removes special characters, looks better../
+        TextStorage = textfile.split(" ");
+        document.getElementById("text").innerHTML = TextStorage[0];
+        document.getElementById("indexSlider").value=0;
+        // console.log(TextStorage);
+        //This is to set the amount of intervals of the slider to the number of words
+        document.getElementById("indexSlider").max=(TextStorage.length-1);
+      });
+    }
+    //Paste function snatcher.
+    var ce = document.querySelector('[contenteditable]')
+    ce.addEventListener('paste', function(e) {
+      e.preventDefault()
+      var text = e.clipboardData.getData('text/plain')
+      document.execCommand('insertText', false, text)
+    })
+    document.addEventListener("keydown", function(event) {
+      ////////////////////////////////////////////////////////////////////// add this in when fixing the scroll bar
+      // let overflowPromise = new Promise((resolve,reject)=>{
+      //   overflowValve();
+      // });
+      // if (event.keyCode == "8") {
+      //   setTimeout(overflowValve, 1);
+      // }
+      if(event.keyCode=="8"&&(document.getElementById("textOverlay").style.display!="block")&&(document.getElementById("menuContainer").style.display!="block")){
+        stop();
+      }
+      if(event.keyCode=="27"&&(document.getElementById("textOverlay").style.display=="block")&&(document.getElementById("menuContainer").style.display!="block")){
+        back();
+      }
+      if (event.keyCode=="32"&&(document.getElementById("textOverlay").style.display!="block")&&(document.getElementById("menuContainer").style.display!="block")) {
+        if (paused == true) {
+          play();
+          paused = false;
+        }else if(paused == false){
+          pause();
+        };
+      }
+      if(event.keyCode=="70"&&(document.getElementById("textOverlay").style.display!="block")){
+        if(BackSplash.style.height=="70vh"||BackSplash.style.height==""){
+          maximise();
+        }else{
+          minimise();
+        }
+      }
+    });
+
+    // function overflowValve() { /// determine if the text is greater than textarea
+    //   var overflowing = document.getElementById("textField");
+    //   try {
+    //     if (overflowing.scrollHeight != overflowing.offsetHeight) {
+    //       document.getElementById("whiteSRC").style.display = "block";
+    //     };
+    //   } catch (err) {}
+    //   try {
+    //     if (overflowing.scrollHeight == overflowing.offsetHeight) {
+    //       document.getElementById("whiteSRC").style.display = "none";
+    //     };
+    //   } catch (err) {}
+    // }
+    //
+
+    let focusUpdate = "menu";
+  </script>
+</html>
