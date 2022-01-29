@@ -684,10 +684,12 @@
         //re-write regex statment pls
 
 
-        textfile = textfile.replace(/[^a-zA-Z0-9,. ]/g, "") //removes special characters, looks better../
+        // textfile = textfile.replace(/[^a-zA-Z0-9,\.\- ]/g, "") //removes special characters, looks better../
+        textfile = textfile.replace(/[\-]/g, " ") //removes - characters, looks better../
+        textfile = textfile.replace(/[^a-zA-Z0-9/,\.\? ]/g, "") //removes special characters, looks better../
 
 
-        
+
         TextStorage = textfile.split(" ");
         document.getElementById("text").innerHTML = TextStorage[0];
         document.getElementById("indexSlider").value=0;
