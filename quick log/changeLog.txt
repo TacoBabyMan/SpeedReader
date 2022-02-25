@@ -1,0 +1,2 @@
+added center dot, I think it makes it easier to comprehend, with a fixed point to stare at.
+added a center control for the center dot.

@@ -436,7 +436,9 @@
           <!-- Hemisphere 1 -->
           <div class="basicContainer center">
             <!-- <div class="centerNF" id="dot" style="background-color:red;width:10px;height:10px;border-radius:36px;top:44%;z-index:12;"></div> -->
-            <div id="text" style="z-index:11;position:relative;top:-7%;"></div>
+            <div id="dotCenter" style="position:absolute;top:43%;left:50%;border-radius:36px;z-index:999;height:10px;width:10px;background-color:red;"></div>
+            <div id="text" style="z-index:11;position:relative;top:-7%;">
+            </div>
           </div>
           <div class="Hemisphere"></div>
           <!-- Hemisphere 2 bottom:-18% -->
@@ -512,6 +514,7 @@
       document.getElementById("Minimize").style.display="block";
       document.getElementById("Maximise").style.display="none";
       document.getElementById("text").style.top="0%";
+      document.getElementById("dotCenter").style.top="50%";
     }
     // height:70vh;
     // width:70vw;
@@ -528,6 +531,7 @@
       document.getElementById("Minimize").style.display="none";
       document.getElementById("Maximise").style.display="block";
       document.getElementById("text").style.top="-7%";
+      document.getElementById("dotCenter").style.top="43%";
     }
     ///Maybe export? --------------------------------------------------------------------------------
     function ColorChanger(){

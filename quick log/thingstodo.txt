@@ -1,0 +1,17 @@
+add option to save ui style
+add tooltips for the playback keys for the shortcuts
+add special symbols button
+add function arrow keys to move around in the textstorage
+add read time
+finish mobile design
+
+add function to group multiple words then display them at the same type
+add width box for words/ adjust it for above function /\
+add setting to change center dot colour.
+
+!important, fix the restarting when index it at the end  --- can't find the problem yet
+!important, fix the words queue starting when wpm was changed while being paused. unintended
+
+
+
+lighthouse issues
